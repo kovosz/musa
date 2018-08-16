@@ -5,3 +5,7 @@
 .idea/
 .vagrant/
 /puphpet/files/dot/ssh/
+
+###> symfony/web-server-bundle ###
+/.web-server-pid
+###< symfony/web-server-bundle ###
