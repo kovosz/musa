@@ -1,3 +1,6 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+index:
+    path: /
+    controller: App\Controller\DefaultController::index
+app_assessment_form:
+    path: /form
+    controller: App\Controller\AssessmentController::form
