@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Entity\Team;
 use App\Form\TeamType;
+use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -30,12 +31,12 @@ class TeamController extends Controller
             // but, the original `$team` variable has also been updated
             $team = $form->getData();
 
-            $session->set('team', $team);
-            // ... perform some action, such as saving the team to the database
-            // for example, if Task is a Doctrine entity, save it!
-            // $entityManager = $this->getDoctrine()->getManager();
-            // $entityManager->persist($team);
-            // $entityManager->flush();
+            /** @var ObjectManager $entityManager */
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($team);
+            $entityManager->flush();
+
+            $session->set('new_team_id', $team->getId());
 
             return $this->redirectToRoute('app_team_success');
         }
@@ -46,13 +47,14 @@ class TeamController extends Controller
     }
 
     /**
-     * @param Request $request
      * @param SessionInterface $session
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function success(SessionInterface $session)
     {
-        $team = $session->get('team');
+        $newTeamId = (int)$session->get('new_team_id');
+        $team = $this->getDoctrine()->getRepository(Team::class)->find($newTeamId);
+
         return $this->render('team/success.html.twig', array(
             'team' => $team,
         ));

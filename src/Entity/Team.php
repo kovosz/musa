@@ -1,40 +1,83 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: user
- * Date: 2018.08.16.
- * Time: 20:00
- */
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @ORM\Entity(repositoryClass="App\Repository\TeamRepository")
+ */
 class Team
 {
     /**
-     * @Assert\NotBlank()
-     *
-     * @var string
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
      */
-    protected $name;
-    /**
-     * @Assert\NotBlank()
-     * @var string
-     */
-    protected $releaseTrain;
-    /**
-     * @Assert\NotBlank()
-     * @Assert\Type(
-     *     type="integer",
-     *     message="The value {{ value }} is not a valid {{ type }}."
-     * )
-     * @var int
-     */
-    protected $size;
+    private $id;
 
     /**
-     * @return string
+     * @ORM\ManyToOne(targetEntity="App\Entity\ReleaseTrain", inversedBy="teams")
+     * @ORM\JoinColumn(nullable=false)
+     *
+     * @Assert\NotBlank()
+     */
+    private $release_train;
+
+    /**
+     * @ORM\Column(type="string", length=32)
+     *
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 3,
+     *      max = 32,
+     *      minMessage = "Team name must be at least {{ limit }} characters long",
+     *      maxMessage = "Team name cannot be longer than {{ limit }} characters"
+     * )
+     */
+    private $name;
+
+    /**
+     * @ORM\Column(type="smallint")
+     *
+     * @Assert\NotBlank()
+     * @Assert\Range(
+     *      min = 1,
+     *      minMessage = "A team must have at least {{ limit }} member"
+     * )
+     */
+    private $size;
+
+    /**
+     * @return int|null
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return ReleaseTrain|null
+     */
+    public function getReleaseTrain(): ?ReleaseTrain
+    {
+        return $this->release_train;
+    }
+
+    /**
+     * @param ReleaseTrain|null $release_train
+     * @return Team
+     */
+    public function setReleaseTrain(?ReleaseTrain $release_train): self
+    {
+        $this->release_train = $release_train;
+
+        return $this;
+    }
+
+    /**
+     * @return null|string
      */
     public function getName(): ?string
     {
@@ -45,32 +88,15 @@ class Team
      * @param string $name
      * @return Team
      */
-    public function setName(string $name): Team
+    public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 
     /**
-     * @return string
-     */
-    public function getReleaseTrain(): ?string
-    {
-        return $this->releaseTrain;
-    }
-
-    /**
-     * @param string $releaseTrain
-     * @return Team
-     */
-    public function setReleaseTrain(string $releaseTrain): Team
-    {
-        $this->releaseTrain = $releaseTrain;
-        return $this;
-    }
-
-    /**
-     * @return int
+     * @return int|null
      */
     public function getSize(): ?int
     {
@@ -81,10 +107,10 @@ class Team
      * @param int $size
      * @return Team
      */
-    public function setSize(int $size): Team
+    public function setSize(int $size): self
     {
         $this->size = $size;
+
         return $this;
     }
-
 }
