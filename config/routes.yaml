@@ -1,6 +1,9 @@
 index:
     path: /
     controller: App\Controller\DefaultController::index
-app_assessment_form:
-    path: /task/new
-    controller: App\Controller\AssessmentController::new
+app_team_new:
+    path: /team/new
+    controller: App\Controller\TeamController::new
+app_team_success:
+    path: /team/success
+    controller: App\Controller\TeamController::success
