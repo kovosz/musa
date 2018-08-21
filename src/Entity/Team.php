@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -48,6 +50,16 @@ class Team
      * )
      */
     private $size;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Assessment", mappedBy="team", orphanRemoval=true)
+     */
+    private $assessments;
+
+    public function __construct()
+    {
+        $this->assessments = new ArrayCollection();
+    }
 
     /**
      * @return int|null
@@ -110,6 +122,37 @@ class Team
     public function setSize(int $size): self
     {
         $this->size = $size;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Assessment[]
+     */
+    public function getAssessments(): Collection
+    {
+        return $this->assessments;
+    }
+
+    public function addAssessment(Assessment $assessment): self
+    {
+        if (!$this->assessments->contains($assessment)) {
+            $this->assessments[] = $assessment;
+            $assessment->setTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAssessment(Assessment $assessment): self
+    {
+        if ($this->assessments->contains($assessment)) {
+            $this->assessments->removeElement($assessment);
+            // set the owning side to null (unless already changed)
+            if ($assessment->getTeam() === $this) {
+                $assessment->setTeam(null);
+            }
+        }
 
         return $this;
     }
